@@ -1,0 +1,54 @@
+package com.example.cryptocurrencyapp.presentation.coin_list
+
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.cryptocurrencyapp.common.Resource
+import com.example.cryptocurrencyapp.domain.use_case.get_coins.GetCoinsUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
+
+/*
+Actually I have shifted most of our business logic in the use_cases files. Now our view model have less business logic. And it's Main
+job is to keep the UI state on changing the configuration like keeping the UI state when we user rotate the screens etc.
+ */
+
+/*
+Here we are using the GetCoinsUseCase.
+ */
+
+
+@HiltViewModel
+class CoinListViewModel @Inject constructor(
+    private val getCoinsUseCase: GetCoinsUseCase
+): ViewModel(){
+    private val _state= mutableStateOf(CoinListState())
+    val state: State<CoinListState> = _state
+
+    init {
+        getCoins()
+    }
+
+    private fun getCoins(){
+        getCoinsUseCase().onEach { result->
+            when(result) {
+                is Resource.Success->{
+                    _state.value= CoinListState(coins= result.data ?: emptyList())
+                }
+
+                is Resource.Error->{
+                    _state.value= CoinListState(error = result.message ?: "An unexpected error occurred")
+                }
+
+                is Resource.Loading -> {
+                    _state.value= CoinListState(isLoading = true)
+                }
+
+            }
+        }.launchIn(viewModelScope)
+    }
+
+}
