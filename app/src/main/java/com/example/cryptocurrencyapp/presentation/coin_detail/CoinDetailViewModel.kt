@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.cryptocurrencyapp.common.Constants
 import com.example.cryptocurrencyapp.common.Resource
 import com.example.cryptocurrencyapp.domain.use_case.get_coin.GetCoinUseCase
-import com.example.cryptocurrencyapp.presentation.coin_list.CoinListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
